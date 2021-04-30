@@ -39,21 +39,21 @@ class Quote extends StatelessWidget {
 
     var adjusted = false;
     do {
-      adjusted = painter.width < constraints.maxWidth &&
-          painter.height < constraints.maxHeight;
+      //var size = painter.size;
+      adjusted = painter.size.width <= constraints.maxWidth &&
+          painter.size.height <= constraints.maxHeight;
 
       if (!adjusted) {
         var currentFontSize = painter.text.style.fontSize;
+        var nextFontSize = ((currentFontSize - minFontSize) * 0.80 + minFontSize).floor().toDouble();
         var newText = TextSpan(
             text: text.text,
-            style: text.style.copyWith(
-                fontSize:
-                    (currentFontSize - minFontSize) * 0.80 + minFontSize));
+            style: text.style.copyWith(fontSize: nextFontSize));
         painter.text = newText;
         painter.layout(
             minWidth: constraints.minWidth, maxWidth: constraints.maxWidth);
       }
-    } while (!adjusted && painter.text.style.fontSize >= minFontSize);
+    } while (!adjusted && painter.text.style.fontSize > minFontSize);
 
     return SizedBox(
       width: painter.size.width,
