@@ -18,6 +18,23 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class QuotePainter extends CustomPainter{
+  TextPainter painter;
+
+  QuotePainter({this.painter});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    painter.paint(canvas, Offset.zero);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+
+}
+
 class Quote extends StatelessWidget {
   double minFontSize;
   TextSpan text;
@@ -39,7 +56,7 @@ class Quote extends StatelessWidget {
 
     var adjusted = false;
     do {
-      //var size = painter.size;
+      var size = painter.size;
       adjusted = painter.size.width <= constraints.maxWidth &&
           painter.size.height <= constraints.maxHeight;
 
@@ -55,6 +72,7 @@ class Quote extends StatelessWidget {
       }
     } while (!adjusted && painter.text.style.fontSize > minFontSize);
 
+    /*
     return SizedBox(
       width: painter.size.width,
       height: painter.size.height,
@@ -63,6 +81,15 @@ class Quote extends StatelessWidget {
         style: painter.text.style,
         textAlign: TextAlign.center,
       ),
+    ); */
+
+
+    return SizedBox(
+      width: painter.size.width,
+      height: painter.size.height,
+      child: CustomPaint(
+        painter: QuotePainter(painter: painter),
+      )
     );
   }
 }
