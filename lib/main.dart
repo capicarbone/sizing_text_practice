@@ -18,30 +18,17 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class QuotePainter extends CustomPainter{
-  TextPainter painter;
-
-  QuotePainter({this.painter});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    painter.paint(canvas, Offset.zero);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
-
-}
-
 class Quote extends StatelessWidget {
   double minFontSize;
   TextSpan text;
   TextAlign align;
   BoxConstraints constraints;
 
-  Quote({this.text, this.constraints, this.minFontSize = 12, this.align = TextAlign.center});
+  Quote(
+      {this.text,
+      this.constraints,
+      this.minFontSize = 12,
+      this.align = TextAlign.center});
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +43,15 @@ class Quote extends StatelessWidget {
 
     var adjusted = false;
     do {
-      var size = painter.size;
       adjusted = painter.size.width <= constraints.maxWidth &&
           painter.size.height <= constraints.maxHeight;
 
       if (!adjusted) {
         var currentFontSize = painter.text.style.fontSize;
-        var nextFontSize = ((currentFontSize - minFontSize) * 0.80 + minFontSize).floor().toDouble();
+        var nextFontSize =
+            ((currentFontSize - minFontSize) * 0.80 + minFontSize)
+                .floor()
+                .toDouble();
         var newText = TextSpan(
             text: text.text,
             style: text.style.copyWith(fontSize: nextFontSize));
@@ -72,7 +61,6 @@ class Quote extends StatelessWidget {
       }
     } while (!adjusted && painter.text.style.fontSize > minFontSize);
 
-    /*
     return SizedBox(
       width: painter.size.width,
       height: painter.size.height,
@@ -81,23 +69,16 @@ class Quote extends StatelessWidget {
         style: painter.text.style,
         textAlign: TextAlign.center,
       ),
-    ); */
-
-
-    return SizedBox(
-      width: painter.size.width,
-      height: painter.size.height,
-      child: CustomPaint(
-        painter: QuotePainter(painter: painter),
-      )
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  String title;
-  MyHomePage({Key key, this.title}) : super(key: key);
+class QuotesList extends StatefulWidget {
+  @override
+  _QuotesListState createState() => _QuotesListState();
+}
 
+class _QuotesListState extends State<QuotesList> {
   var texts = [
     "Be water, my friend",
     "You will never be happy if you continue to search for what happiness consists of. You will never live if you are looking for the meaning of life.",
@@ -108,8 +89,62 @@ class MyHomePage extends StatelessWidget {
     "Difficult times have helped me to understand better than before how infinitely rich and beautiful life is in every way, and that so many things that one goes worrying about are of no importance whatsoever.",
   ];
 
-  var testText =
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. ";
+  @override
+  void initState() {
+    super.initState();
+    waitFontLoad();
+  }
+
+  void waitFontLoad() async {
+    await Future.delayed(Duration(seconds: 1), () {
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: texts.length,
+        itemBuilder: (context, i) {
+          return Column(
+            children: [
+              Container(
+                  width: double.infinity,
+                  height: 200,
+                  child: Padding(
+                    padding: const EdgeInsets.all(22.0),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Center(
+                          child: Quote(
+                            text: TextSpan(
+                                text: texts[i],
+                                style: GoogleFonts.montserrat(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 40,
+                                    color: Colors.black87)),
+                            constraints: constraints,
+                          ),
+                        );
+                      },
+                    ),
+                  )),
+              Center(
+                child: Container(
+                  height: 10,
+                  width: 100,
+                  color: Colors.black87,
+                ),
+              )
+            ],
+          );
+        });
+  }
+}
+
+class MyHomePage extends StatelessWidget {
+  String title;
+  MyHomePage({Key key, this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -119,42 +154,7 @@ class MyHomePage extends StatelessWidget {
       ),
       body: Container(
         color: Colors.amber,
-        child: ListView.builder(
-            itemCount: texts.length,
-            itemBuilder: (context, i) {
-              return Column(
-                children: [
-                  Container(
-                      width: double.infinity,
-                      height: 200,
-                      child: Padding(
-                        padding: const EdgeInsets.all(22.0),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            return Center(
-                              child: Quote(
-                                text: TextSpan(
-                                    text: texts[i],
-                                    style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 40,
-                                        color: Colors.black87)),
-                                constraints: constraints,
-                              ),
-                            );
-                          },
-                        ),
-                      )),
-                  Center(
-                    child: Container(
-                      height: 10,
-                      width: 100,
-                      color: Colors.black87,
-                    ),
-                  )
-                ],
-              );
-            }),
+        child: QuotesList(),
       ),
     );
   }
