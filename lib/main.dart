@@ -42,6 +42,10 @@ class Quote extends StatelessWidget {
         minWidth: constraints.minWidth, maxWidth: constraints.maxWidth);
 
     var adjusted = false;
+
+    // If the default font size surpasses the constraints limit then it test to
+    // reduces the font size in loop until we get a valid value or a minimum
+    // has been reached.
     do {
       adjusted = painter.size.width <= constraints.maxWidth &&
           painter.size.height <= constraints.maxHeight;
